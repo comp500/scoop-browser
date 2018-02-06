@@ -84,7 +84,9 @@ module.exports = (faviconPath) => {
 					package.favicon = page.favicon;
 					console.log(count++);
 					if (!package.shortcutName) {
-						package.shortcutName = page.title;
+						let title = page.title;
+						title.replace("GitHub - ", ""); // Remove github from title
+						package.shortcutName = title;
 					}
 					return package;
 				}).catch((e) => {
