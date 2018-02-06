@@ -8,10 +8,10 @@ module.exports = {
 	  'link[rel=apple-touch-icon-precomposed][href]',
 	  'link[rel=apple-touch-icon][href]',
 	  'link[rel="shortcut icon"][href]',
-	  'link[rel=icon][href]',
-	  'meta[name=msapplication-TileImage][content]',
-	  'meta[name=twitter\\:image][content]',
-	  'meta[property=og\\:image][content]'
+		'link[rel=icon][href]'
+//	  'meta[name=msapplication-TileImage][content]',
+//	  'meta[name=twitter\\:image][content]',
+//	  'meta[property=og\\:image][content]'
 	],
   
 	predicates: [

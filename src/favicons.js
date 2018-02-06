@@ -8,23 +8,27 @@ const xray = require("x-ray")();
 const resolveUrl = require("url").resolve;
 
 let downloadPage = (url) => {
-	return xray(url, faviconsSchema.selectors.join(), [{
-		href: '@href',
-		content: '@content',
-		property: '@property',
-		rel: '@rel',
-		name: '@name',
-		sizes: '@sizes',
-		title: 'title'
-	}]);
+	return xray(url, {
+		title: "title",
+		favicons: xray(faviconsSchema.selectors.join(), [{
+			href: '@href',
+			content: '@content',
+			property: '@property',
+			rel: '@rel',
+			name: '@name',
+			sizes: '@sizes',
+			title: 'title'
+		}])
+	});
 };
 
 let getFavicon = (url) => {
 	return new Promise(function (resolve, reject) {
-		downloadPage(url)((err, favicons) => {
+		downloadPage(url)((err, page) => {
 			if (err) {
 				return reject(err);
 			}
+			let favicons = page.favicons;
 
 			favicons.push({
 				href: resolveUrl(url, 'favicon.ico'),
@@ -62,7 +66,10 @@ let getFavicon = (url) => {
 			});
 
 			// Return last sorted, highest in ranking
-			return resolve(favicons[favicons.length - 1]);
+			return resolve({
+				favicon: favicons[favicons.length - 1],
+				title: page.title
+			});
 		})
 	});
 };
@@ -73,9 +80,12 @@ module.exports = (faviconPath) => {
 	return (array) => {
 		return Promise.all(array.map((package) => {
 			if (package.homepage) {
-				return getFavicon(package.homepage).then((favicon) => {
-					package.favicon = favicon;
+				return getFavicon(package.homepage).then((page) => {
+					package.favicon = page.favicon;
 					console.log(count++);
+					if (!package.shortcutName) {
+						package.shortcutName = page.title;
+					}
 					return package;
 				}).catch((e) => {
 					console.error(e);
