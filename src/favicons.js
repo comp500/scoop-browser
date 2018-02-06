@@ -1,3 +1,8 @@
+/*
+	Parts of this code copied from @meltwater/fetch-favicon
+	Copyright (c) 2016 geneconnolly <gene.connolly@meltwater.com>
+*/
+
 const faviconsSchema = require("./faviconsSchema.js");
 const xray = require("x-ray")();
 const resolveUrl = require("url").resolve;
