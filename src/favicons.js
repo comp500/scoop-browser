@@ -31,22 +31,38 @@ let getFavicon = (url) => {
 				name: 'favicon.ico'
 			});
 
-			favicons = favicons.map((favicon) => {
-				const f = {
-					href: favicon.href || favicon.content,
-					name: favicon.name || favicon.rel || favicon.property,
-					size: Math.min.apply(null, (favicon.sizes || '').split(/[^0-9\.]+/g)) || undefined
-				};
-
-				if (!f.size) {
-					delete f.size;
+			favicons.sort((faviconA, faviconB) => {
+				let sizeA = Math.min.apply(null, (favicon.sizes || '').split(/[^0-9\.]+/g)) || undefined;
+				let sizeB = Math.min.apply(null, (favicon.sizes || '').split(/[^0-9\.]+/g)) || undefined;
+				if (sizeA) {
+					if (sizeB) {
+						// Size comparison
+						return sizeA - sizeB;
+					} else {
+						// A has size, but B does not, so move A up
+						return 1;
+					}
+				} else {
+					if (!sizeB) {
+						if (sizeA.name == "favicon.ico") {
+							// Move A down as it is the fallback
+							return -1;
+						} else if (sizeB.name == "favicon.ico") {
+							// Move B down as it is the fallback
+							return 1;
+						} else {
+							// Neither have size, don't move them
+							return 0;
+						}
+					} else {
+						// B has size, but A does not, so move B up
+						return -1;
+					}
 				}
+			});
 
-				return f;
-			})
-
-			//markActiveFavicon(favicons, size)
-			return resolve(favicons)
+			// Return last sorted, highest in ranking
+			return resolve(favicons[favicons.length - 1]);
 		})
 	});
 };
@@ -57,8 +73,8 @@ module.exports = (faviconPath) => {
 	return (array) => {
 		return Promise.all(array.map((package) => {
 			if (package.homepage) {
-				return getFavicon(package.homepage).then((favicons) => {
-					package.favicons = favicons;
+				return getFavicon(package.homepage).then((favicon) => {
+					package.favicon = favicon;
 					console.log(count++);
 					return package;
 				}).catch((e) => {
