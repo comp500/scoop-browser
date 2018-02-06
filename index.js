@@ -4,6 +4,7 @@ const NodeGit = require("nodegit");
 const express = require("express");
 const app = express();
 const fetchFavicons = require("@meltwater/fetch-favicon").fetchFavicons;
+const getFavicons = require("./src/favicons.js");
 
 const gitReposPath = path.join(__dirname, "tmp/");
 const gitReposList = {
@@ -101,25 +102,6 @@ let indexRepositories = () => {
 
 let mergeBuckets = (arrays) => {
 	return [].concat(...arrays);
-};
-
-let count = 0;
-
-let getFavicons = (array) => {
-	return Promise.all(array.map((package) => {
-		if (package.homepage) {
-			return fetchFavicons(package.homepage).then((favicons) => {
-				package.favicons = favicons;
-				console.log(count++);
-				return package;
-			}).catch((e) => {
-				console.error(e);
-				console.error(package.homepage);
-			});
-		} else {
-			return package;
-		}
-	}));
 };
 
 /*
