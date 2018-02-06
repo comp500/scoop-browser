@@ -19,7 +19,7 @@ const faviconPath = path.join(__dirname, "tmp/favicon/");
 
 const getFavicons = require("./src/favicons.js")(faviconPath);
 
-let packageIndex = {};
+let packageIndex = null;
 
 /*
 	Main functions
@@ -107,14 +107,18 @@ let mergeBuckets = (arrays) => {
 let buildFinalIndex = (array) => {
 	let finalIndex = {};
 	array.forEach(package => {
-		finalIndex[package.name] = {
-			version: package.version,
-			homepage: package.homepage,
-			license: package.license,
-			bucket: package.bucket,
-			friendlyName: package.shortcutName,
-			icon: package.favicon.href
-		};
+		if (!package) {
+			console.error("Couldn't find a package!");
+		} else {
+			finalIndex[package.name] = {
+				version: package.version,
+				homepage: package.homepage,
+				license: package.license,
+				bucket: package.bucket,
+				friendlyName: package.shortcutName,
+				icon: package.favicon ? package.favicon.href : null
+			};
+		}
 	});
 	return finalIndex;
 };
@@ -134,11 +138,13 @@ try {
 
 app.get("/list.json", (req, res) => {
 	if (packageIndex) {
-		res.send(packageIndex);
+		res.json(packageIndex);
 	} else {
-		res.send({err: currentError});
+		res.json({err: currentError});
 	}
 });
+
+app.use(express.static("docs"));
 
 app.listen(3000, () => {
 	console.log("Listening on port 3000!");
