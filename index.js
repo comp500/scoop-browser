@@ -66,7 +66,19 @@ let indexRepositories = () => {
 										fileContents = fileContents.toString().replace(/(?:,[\s\n]+)"\w+":\s*"(?:\\"|[^"])*\n(?:\\"|[^"])+"|"\w+":\s*"(?:\\"|[^"])*\n(?:\\"|[^"])+",?/g, "");
 										// Remove arrays with multiline strings, stupid miniconda3
 										fileContents = fileContents.replace(/"\w+":\s*\[\s*"(?:\\"|[^"])*\n(?:\\"|[^"])+"\s*\],|(?:,[\s\n]+)"\w+":\s*\[\s*"(?:\\"|[^"])*\n(?:\\"|[^"])+"\s*\]/g, "");
-										resolve(JSON.parse(fileContents));
+										let parsed = JSON.parse(fileContents);
+
+										let shortcutName = parsed.shortcuts ? parsed.shortcuts[0][1] : undefined;
+
+										// Reduces memory usage by only passing certain values back
+										resolve({
+											name: fileName.slice(0, -5),
+											version: parsed.version,
+											homepage: parsed.homepage,
+											license: parsed.license,
+											bucket: key,
+											shortcutName
+										});
 									} catch (e) {
 										console.error("Error parsing file: " + fileName);
 										reject(e);
@@ -80,9 +92,16 @@ let indexRepositories = () => {
 		});
 	})).then((passthrough) => {
 		console.log("Files parsed!");
-		console.log(passthrough);
 		return passthrough;
 	});
+};
+
+let mergeBuckets = (arrays) => {
+	return [].concat(...arrays);
+};
+
+let getFavicons = (array) => {
+	return array;
 };
 
 /*
@@ -105,4 +124,7 @@ app.listen(3000, () => {
 	console.log("Listening on port 3000!");
 });
 
-fetchRepositories().then(indexRepositories);
+fetchRepositories().then(indexRepositories).then(mergeBuckets).then(getFavicons).then((array) => {
+	console.log(array);
+	console.log(array.length);
+});
