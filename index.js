@@ -3,8 +3,6 @@ const fs = require("fs");
 const NodeGit = require("nodegit");
 const express = require("express");
 const app = express();
-const fetchFavicons = require("@meltwater/fetch-favicon").fetchFavicons;
-const getFavicons = require("./src/favicons.js");
 
 const gitReposPath = path.join(__dirname, "tmp/");
 const gitReposList = {
@@ -18,6 +16,8 @@ const gitReposList = {
 };
 const currentError = "Error: Website API not initialised yet, please refresh.";
 const faviconPath = path.join(__dirname, "tmp/favicon/");
+
+const getFavicons = require("./src/favicons.js")(faviconPath);
 
 let packageIndex = [];
 
