@@ -1,6 +1,8 @@
 const path = require("path");
 const fs = require("fs");
 const NodeGit = require("nodegit");
+const express = require("express");
+const app = express();
 
 const gitReposPath = path.join(__dirname, "tmp/");
 const gitReposList = {
@@ -11,18 +13,15 @@ const gitReposList = {
 	"extras": {
 		cloneURL: "https://github.com/lukesampson/scoop-extras.git"
 	}
-}
+};
+const currentError = "Error: Website API not initialised yet, please refresh.";
 
-try {
-	fs.mkdirSync(gitReposPath);
-} catch (e) {
-	if (e.code != "EEXIST") {
-		throw e;
-	}
-}
+/*
+	Main functions
+*/
 
 let fetchRepositories = () => {
-	Promise.all(Object.keys(gitReposList).map((key) => {
+	return Promise.all(Object.keys(gitReposList).map((key) => {
 		let clonePath = path.join(gitReposPath, key);
 		fs.access(clonePath, (err) => {
 			if (err) { // check if repo exists
@@ -38,17 +37,30 @@ let fetchRepositories = () => {
 	})).then(() => {
 		console.log("Git repositories fetched!");
 	});
-}
+};
 
-const express = require("express");
-const app = express();
+let indexRepositories = () => {
+	console.log("Indexing...");
+};
+
+/*
+	Express stuff
+*/
+
+try {
+	fs.mkdirSync(gitReposPath);
+} catch (e) {
+	if (e.code != "EEXIST") {
+		throw e;
+	}
+}
 
 app.get("/list.json", (req, res) => {
 	res.send('Hello World!');
 });
 
 app.listen(3000, () => {
-	console.log("Listening on port 3000!")
+	console.log("Listening on port 3000!");
 });
 
-fetchRepositories();
+fetchRepositories().then(indexRepositories);
