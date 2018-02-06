@@ -3,6 +3,7 @@ const fs = require("fs");
 const NodeGit = require("nodegit");
 const express = require("express");
 const app = express();
+const fetchFavicons = require("@meltwater/fetch-favicon").fetchFavicons;
 
 const gitReposPath = path.join(__dirname, "tmp/");
 const gitReposList = {
@@ -15,6 +16,8 @@ const gitReposList = {
 	}
 };
 const currentError = "Error: Website API not initialised yet, please refresh.";
+const faviconPath = path.join(__dirname, "tmp/favicon/");
+
 let packageIndex = [];
 
 /*
@@ -100,8 +103,23 @@ let mergeBuckets = (arrays) => {
 	return [].concat(...arrays);
 };
 
+let count = 0;
+
 let getFavicons = (array) => {
-	return array;
+	return Promise.all(array.map((package) => {
+		if (package.homepage) {
+			return fetchFavicons(package.homepage).then((favicons) => {
+				package.favicons = favicons;
+				console.log(count++);
+				return package;
+			}).catch((e) => {
+				console.error(e);
+				console.error(package.homepage);
+			});
+		} else {
+			return package;
+		}
+	}));
 };
 
 /*
@@ -110,6 +128,7 @@ let getFavicons = (array) => {
 
 try {
 	fs.mkdirSync(gitReposPath);
+	fs.mkdirSync(faviconPath);
 } catch (e) {
 	if (e.code != "EEXIST") {
 		throw e;
@@ -127,4 +146,5 @@ app.listen(3000, () => {
 fetchRepositories().then(indexRepositories).then(mergeBuckets).then(getFavicons).then((array) => {
 	console.log(array);
 	console.log(array.length);
+	fs.writeFileSync("output.json", JSON.stringify(array));
 });
