@@ -32,8 +32,8 @@ let getFavicon = (url) => {
 			});
 
 			favicons.sort((faviconA, faviconB) => {
-				let sizeA = Math.min.apply(null, (favicon.sizes || '').split(/[^0-9\.]+/g)) || undefined;
-				let sizeB = Math.min.apply(null, (favicon.sizes || '').split(/[^0-9\.]+/g)) || undefined;
+				let sizeA = Math.min.apply(null, (faviconA.sizes || '').split(/[^0-9\.]+/g)) || undefined;
+				let sizeB = Math.min.apply(null, (faviconB.sizes || '').split(/[^0-9\.]+/g)) || undefined;
 				if (sizeA) {
 					if (sizeB) {
 						// Size comparison
@@ -44,10 +44,10 @@ let getFavicon = (url) => {
 					}
 				} else {
 					if (!sizeB) {
-						if (sizeA.name == "favicon.ico") {
+						if (faviconA.name == "favicon.ico") {
 							// Move A down as it is the fallback
 							return -1;
-						} else if (sizeB.name == "favicon.ico") {
+						} else if (faviconB.name == "favicon.ico") {
 							// Move B down as it is the fallback
 							return 1;
 						} else {
