@@ -90,8 +90,11 @@ module.exports = (faviconPath) => {
 				}).catch((e) => {
 					console.error(e);
 					console.error(package.homepage);
+					count++;
+					return package;
 				});
 			} else {
+				count++;
 				return package;
 			}
 		}));

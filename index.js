@@ -107,18 +107,14 @@ let mergeBuckets = (arrays) => {
 let buildFinalIndex = (array) => {
 	let finalIndex = {};
 	array.forEach(package => {
-		if (!package) {
-			console.error("Couldn't find a package!");
-		} else {
-			finalIndex[package.name] = {
-				version: package.version,
-				homepage: package.homepage,
-				license: package.license,
-				bucket: package.bucket,
-				friendlyName: package.shortcutName,
-				icon: package.favicon ? package.favicon.href : null
-			};
-		}
+		finalIndex[package.name] = {
+			version: package.version,
+			homepage: package.homepage,
+			license: package.license,
+			bucket: package.bucket,
+			friendlyName: package.shortcutName,
+			icon: package.favicon ? package.favicon.href : null
+		};
 	});
 	return finalIndex;
 };
