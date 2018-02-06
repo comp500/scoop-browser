@@ -41,7 +41,6 @@ let fetchRepositories = () => {
 };
 
 let indexRepositories = () => {
-	console.log("Indexing...");
 	return Promise.all(Object.keys(gitReposList).map((key) => {
 		let repoDirectory = path.join(gitReposPath, key);
 		if (gitReposList[key].directory) {
@@ -79,7 +78,11 @@ let indexRepositories = () => {
 				}
 			});
 		});
-	}));
+	})).then((passthrough) => {
+		console.log("Files parsed!");
+		console.log(passthrough);
+		return passthrough;
+	});
 };
 
 /*
