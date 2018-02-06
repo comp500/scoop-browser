@@ -19,7 +19,7 @@ const faviconPath = path.join(__dirname, "tmp/favicon/");
 
 const getFavicons = require("./src/favicons.js")(faviconPath);
 
-let packageIndex = [];
+let packageIndex = {};
 
 /*
 	Main functions
@@ -104,6 +104,21 @@ let mergeBuckets = (arrays) => {
 	return [].concat(...arrays);
 };
 
+let buildFinalIndex = (array) => {
+	let finalIndex = {};
+	array.forEach(package => {
+		finalIndex[package.name] = {
+			version: package.version,
+			homepage: package.homepage,
+			license: package.license,
+			bucket: package.bucket,
+			friendlyName: package.shortcutName,
+			icon: package.favicon.href
+		};
+	});
+	return finalIndex;
+};
+
 /*
 	Express stuff
 */
@@ -118,15 +133,19 @@ try {
 }
 
 app.get("/list.json", (req, res) => {
-	res.send('Hello World!');
+	if (packageIndex) {
+		res.send(packageIndex);
+	} else {
+		res.send({err: currentError});
+	}
 });
 
 app.listen(3000, () => {
 	console.log("Listening on port 3000!");
 });
 
-fetchRepositories().then(indexRepositories).then(mergeBuckets).then(getFavicons).then((array) => {
-	console.log(array);
-	console.log(array.length);
-	fs.writeFileSync("output.json", JSON.stringify(array));
+fetchRepositories().then(indexRepositories).then(mergeBuckets).then(getFavicons).then(buildFinalIndex).then((finalIndex) => {
+	packageIndex = finalIndex;
+	console.log("Completed index building!");
+	console.log(packageIndex.length);
 });
