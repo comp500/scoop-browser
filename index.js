@@ -62,8 +62,11 @@ let indexRepositories = () => {
 									reject(err);
 								} else {
 									try {
-										fileContents = fileContents.toString().replace(/"\w+":\s*"(?:\\"|[^"])*\n(?:\\"|[^"])+",?/g, "");
-										//fileContents = fileContents.replace(/\\/g, "\\\\");
+										// Ugly hack to remove multiline stuff because js JSON doesn't support it.
+										// Remove object keys with multiline strings
+										fileContents = fileContents.toString().replace(/(?:,[\s\n]+)"\w+":\s*"(?:\\"|[^"])*\n(?:\\"|[^"])+"|"\w+":\s*"(?:\\"|[^"])*\n(?:\\"|[^"])+",?/g, "");
+										// Remove arrays with multiline strings, stupid miniconda3
+										fileContents = fileContents.replace(/"\w+":\s*\[\s*"(?:\\"|[^"])*\n(?:\\"|[^"])+"\s*\],|(?:,[\s\n]+)"\w+":\s*\[\s*"(?:\\"|[^"])*\n(?:\\"|[^"])+"\s*\]/g, "");
 										resolve(JSON.parse(fileContents));
 									} catch (e) {
 										console.error("Error parsing file: " + fileName);
