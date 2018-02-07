@@ -28,17 +28,18 @@ let packageIndex = null;
 let fetchRepositories = () => {
 	return Promise.all(Object.keys(gitReposList).map((key) => {
 		let clonePath = path.join(gitReposPath, key);
-		fs.access(clonePath, (err) => {
-			if (err) { // check if repo exists
-				return NodeGit.Clone(gitReposList[key].cloneURL, clonePath);
-			} else {
-				return NodeGit.Repository.open(clonePath).then((repo) => {
-					return repo.fetchAll().then(() => {
-						return repo.mergeBranches("master", "origin/master");
-					});
+		try {
+			fs.accessSync(clonePath);
+			console.log("Fetching", key);
+			return NodeGit.Repository.open(clonePath).then((repo) => {
+				return repo.fetchAll().then(() => {
+					return repo.mergeBranches("master", "origin/master");
 				});
-			}
-		});
+			});
+		} catch (e) {
+			console.log("Cloning", key);
+			return NodeGit.Clone(gitReposList[key].cloneURL, clonePath);
+		}
 	})).then((a) => {
 		console.log("Git repositories fetched!");
 		console.log(a);
