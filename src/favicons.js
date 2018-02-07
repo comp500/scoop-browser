@@ -83,11 +83,16 @@ module.exports = (faviconPath) => {
 				return getFavicon(package.homepage).then((page) => {
 					package.favicon = page.favicon;
 					console.log(count++);
-					if (!package.shortcutName && page.title) {
-						let title = page.title;
-						title = title.replace("GitHub - ", ""); // Remove github from title
-						title = title.replace(" | SourceForge.net", ""); // Remove all the forged sources
-						package.shortcutName = title;
+					if (!package.shortcutName) {
+						if (page.title) {
+							let title = page.title;
+							title = title.replace("GitHub - ", ""); // Remove github from title
+							title = title.replace(" | SourceForge.net", ""); // Remove all the forged sources
+							title = title.replace(/(?: - | \| )?Home(?: - | \| )?|Home\s?page/gi, ""); // Remove "Home" or "Homepage" or "Home Page" etc.
+							package.shortcutName = title;
+						} else {
+							package.shortcutName = package.name;
+						}
 					}
 					return package;
 				}).catch((e) => {
