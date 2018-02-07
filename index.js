@@ -142,8 +142,9 @@ app.get("/list.json", (req, res) => {
 
 app.use(express.static("docs"));
 
-app.listen(3000, () => {
-	console.log("Listening on port 3000!");
+app.listen(process.env.PORT || 3000, () => {
+	let port = process.env.PORT || 3000;
+	console.log(`Listening on port ${port}!`);
 });
 
 fetchRepositories().then(indexRepositories).then(mergeBuckets).then(getFavicons).then(buildFinalIndex).then((finalIndex) => {
