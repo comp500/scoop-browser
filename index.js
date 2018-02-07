@@ -39,8 +39,9 @@ let fetchRepositories = () => {
 				});
 			}
 		});
-	})).then(() => {
+	})).then((a) => {
 		console.log("Git repositories fetched!");
+		console.log(a);
 	});
 };
 
