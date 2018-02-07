@@ -40,9 +40,8 @@ let fetchRepositories = () => {
 			console.log("Cloning", key);
 			return NodeGit.Clone(gitReposList[key].cloneURL, clonePath);
 		}
-	})).then((a) => {
+	})).then(() => {
 		console.log("Git repositories fetched!");
-		console.log(a);
 	});
 };
 
