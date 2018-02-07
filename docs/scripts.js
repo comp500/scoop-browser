@@ -3,11 +3,15 @@ fetch("/list.json").then(function(response) {
 }).then(function(data) {
 	let test = "";
 	Object.keys(data).forEach(key => {
+		test += "<div>"
+		if (data[key].icon) {
+			test += "<img src=\"" + data[key].icon + "\" width=\"32\">"
+		}
 		test += "<strong>";
 		test += key;
 		test += "</strong> ";
 		test += data[key].friendlyName;
-		test += "<br>";
+		test += "</div>";
 	});
 	document.getElementById("packages").innerHTML = test;
 });
