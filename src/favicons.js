@@ -5,7 +5,7 @@
 
 const faviconsSchema = require("./faviconsSchema.js");
 const xray = require("x-ray")();
-const resolveUrl = require("url").resolve;
+const URLObject = require("url").URL;
 
 let downloadPage = (url) => {
 	return xray(url, {
@@ -30,8 +30,12 @@ let getFavicon = (url) => {
 			}
 			let favicons = page.favicons;
 
+			let faviconLocation = new URLObject(url);
+			faviconLocation.pathname = "favicon.ico";
+			faviconLocation.search = "";
+
 			favicons.push({
-				href: resolveUrl(url, 'favicon.ico'),
+				href: faviconLocation.href,
 				name: 'favicon.ico'
 			});
 
