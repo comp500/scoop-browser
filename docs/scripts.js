@@ -3,7 +3,7 @@ fetch("/list.json").then(function(response) {
 }).then(function(data) {
 	let test = "";
 	Object.keys(data).forEach(key => {
-		test += "<div>"
+		test += "<div class=\"package\">"
 		if (data[key].icon) {
 			test += "<img src=\"" + data[key].icon + "\" width=\"32\">"
 		}

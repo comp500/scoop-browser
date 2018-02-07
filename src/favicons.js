@@ -85,7 +85,9 @@ module.exports = (faviconPath) => {
 		return Promise.all(array.map((package) => {
 			if (package.homepage) {
 				return getFavicon(package.homepage).then((page) => {
-					package.favicon = page.favicon;
+					if (page.favicon != "https://assets-cdn.github.com/favicon.ico") {
+						package.favicon = page.favicon;
+					}
 					console.log(count++);
 					if (!package.shortcutName) {
 						if (page.title) {
@@ -93,7 +95,13 @@ module.exports = (faviconPath) => {
 							title = title.replace("GitHub - ", ""); // Remove github from title
 							title = title.replace(" | SourceForge.net", ""); // Remove all the forged sources
 							title = title.replace(/(?: - | \| )?Home(?: - | \| )?|Home\s?page/gi, ""); // Remove "Home" or "Homepage" or "Home Page" etc.
-							package.shortcutName = title;
+							title = title.replace(/\s?Downloads?\s?(?:- | \| )?/gi, ""); // Remove "Download" pages
+
+							if (title.replace(/\W/g).length == 0 || title == "Redirecting...") {
+								package.shortcutName = package.name;
+							} else {
+								package.shortcutName = title;
+							}
 						} else {
 							package.shortcutName = package.name;
 						}
