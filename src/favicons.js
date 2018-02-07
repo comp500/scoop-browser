@@ -34,6 +34,13 @@ let getFavicon = (url) => {
 			faviconLocation.pathname = "favicon.ico";
 			faviconLocation.search = "";
 
+			if (faviconLocation.host == "github.com") {
+				return resolve({ // don't use gh favicon
+					favicon: null,
+					title: page.title
+				});
+			}
+
 			favicons.push({
 				href: faviconLocation.href,
 				name: 'favicon.ico'
